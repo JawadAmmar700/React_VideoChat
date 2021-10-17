@@ -42,7 +42,25 @@ const StreamVideo = ({ location }) => {
         photoUrl: localStorage.getItem("userPhoto"),
       })
     })
+    __init__(peerCalls)
 
+    socket.on("user-left", (users, removeUserId) => {
+      setUsers(users)
+      peerCalls[removeUserId]?.call.close()
+      peerCalls[removeUserId]?.newUserVideo.remove()
+    })
+    socket.on("get-All-Users", users => {
+      setUsers(users)
+    })
+    socket.on("receive-message", (message, username) => {
+      setMessages(messages => [...messages, { message, username }])
+    })
+    socket.on("notify", (message, username) => {
+      toast.success(`${username}: ${message}`)
+    })
+  }, [])
+
+  const __init__ = peerCalls => {
     if (
       "mediaDevices" in navigator &&
       "getUserMedia" in navigator.mediaDevices
@@ -94,23 +112,7 @@ const StreamVideo = ({ location }) => {
           })
         })
     }
-    socket.on("user-left", (users, removeUserId) => {
-      setUsers(users)
-      peerCalls[removeUserId]?.call.close()
-      peerCalls[removeUserId]?.newUserVideo.remove()
-    })
-
-    socket.on("get-All-Users", users => {
-      setUsers(users)
-    })
-
-    socket.on("receive-message", (message, username) => {
-      setMessages(messages => [...messages, { message, username }])
-    })
-    socket.on("notify", (message, username) => {
-      toast.success(`${username}: ${message}`)
-    })
-  }, [])
+  }
 
   const appendUserVideoToDom = (video, stream) => {
     video.srcObject = stream
