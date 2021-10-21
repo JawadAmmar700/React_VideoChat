@@ -70,7 +70,7 @@ const StreamVideo = ({ location }) => {
           audio: true,
           facingMode: "user",
           video: {
-            facingMode: "environment",
+            facingMode: "user",
             width: { min: 640, ideal: 1280, max: 1920 },
             height: { min: 480, ideal: 720, max: 1080 },
           },
@@ -220,7 +220,7 @@ const StreamVideo = ({ location }) => {
         )}
       </div>
 
-      <div className="fixed bottom-0 bg-gray-900 w-full h-12 flex items-center justify-center z-20 ">
+      <div className="fixed bottom-0 bg-gray-900 w-full h-12 flex items-center justify-evenly z-20 ">
         <div className="flex items-center justify-center space-x-3 ">
           <button
             className="bg-blue-500 cursor-pointer  hover:bg-blue-400  text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded"
@@ -241,7 +241,7 @@ const StreamVideo = ({ location }) => {
             <PhoneIcon className="w-4" />
           </button>
         </div>
-        <div className="flex items-center justify-center space-x-3 absolute right-5">
+        <div className="flex items-center justify-center space-x-3">
           <button>
             <InformationCircleIcon className="w-5 text-white cursor-pointer scale-100 hover:text-red-500" />
           </button>
