@@ -68,6 +68,7 @@ const StreamVideo = ({ location }) => {
       navigator.mediaDevices
         .getUserMedia({
           audio: true,
+          facingMode: "user",
           video: {
             facingMode: "environment",
             width: { min: 640, ideal: 1280, max: 1920 },

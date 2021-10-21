@@ -27,7 +27,7 @@ const New = ({ location }) => {
         .getUserMedia({
           audio: true,
           video: {
-            facingMode: "environment",
+            facingMode: "user",
             width: { min: 640, ideal: 1280, max: 1920 },
             height: { min: 480, ideal: 720, max: 1080 },
           },
@@ -37,6 +37,10 @@ const New = ({ location }) => {
           myVideoRef.current.srcObject = stream
           myVideoRef.current.play()
         })
+    }
+
+    return () => {
+      videoInstance.current.getTracks().forEach(track => track.stop())
     }
   }, [])
 
