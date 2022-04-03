@@ -15,7 +15,12 @@ import { ArrowCircleRightIcon } from "@heroicons/react/solid"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 const socket = io(process.env.REACT_APP_SERVER)
-const peer = new Peer()
+const peer = new Peer("", {
+  host: "localhost",
+  port: 2000,
+  path: "/",
+  key: "peerjs",
+})
 
 const StreamVideo = ({ location }) => {
   const [userId, setUserId] = useState(null)
@@ -34,6 +39,7 @@ const StreamVideo = ({ location }) => {
   useEffect(() => {
     let peerCalls = {}
     peer.on("open", id => {
+      console.log("my id", id)
       setUserId(id)
       socket.emit("join-room", {
         username: localStorage.getItem("user"),
@@ -44,6 +50,40 @@ const StreamVideo = ({ location }) => {
     })
     __init__(peerCalls)
 
+    socket.on("user-joined", otherUserId => {
+      setTimeout(() => {
+        const call = peer.call(otherUserId, myVideoInstance.current)
+        const newUserVideo = document.createElement("video")
+        call.on("stream", newUserVideoStream => {
+          console.log("second", newUserVideoStream)
+          currentPeer.current.push(call.peerConnection)
+          peerCalls[otherUserId] = {
+            call,
+            newUserVideo,
+          }
+          appendUserVideoToDom(newUserVideo, newUserVideoStream)
+        })
+
+        call.on("close", () => {
+          newUserVideo.remove()
+        })
+      }, 3000)
+    })
+    peer.on("call", call => {
+      call.answer(myVideoInstance.current)
+      call.on("stream", OtherThanYouVideoStream => {
+        console.log("first", OtherThanYouVideoStream)
+        const newUserVideo = document.createElement("video")
+        if (!peerCalls[call.peer]) {
+          currentPeer.current.push(call.peerConnection)
+          appendUserVideoToDom(newUserVideo, OtherThanYouVideoStream)
+          peerCalls[call.peer] = {
+            call,
+            newUserVideo,
+          }
+        }
+      })
+    })
     socket.on("user-left", (users, removeUserId) => {
       setUsers(users)
       peerCalls[removeUserId]?.call.close()
@@ -79,38 +119,6 @@ const StreamVideo = ({ location }) => {
           myVideoInstance.current = stream
           myVideoRef.current.srcObject = stream
           myVideoRef.current.play()
-
-          socket.on("user-joined", otherUserId => {
-            const call = peer.call(otherUserId, stream)
-            const newUserVideo = document.createElement("video")
-            call.on("stream", newUserVideoStream => {
-              currentPeer.current.push(call.peerConnection)
-              peerCalls[otherUserId] = {
-                call,
-                newUserVideo,
-              }
-              appendUserVideoToDom(newUserVideo, newUserVideoStream)
-            })
-
-            call.on("close", () => {
-              newUserVideo.remove()
-            })
-          })
-
-          peer.on("call", call => {
-            call.answer(stream)
-            call.on("stream", OtherThanYouVideoStream => {
-              const newUserVideo = document.createElement("video")
-              if (!peerCalls[call.peer]) {
-                currentPeer.current.push(call.peerConnection)
-                appendUserVideoToDom(newUserVideo, OtherThanYouVideoStream)
-                peerCalls[call.peer] = {
-                  call,
-                  newUserVideo,
-                }
-              }
-            })
-          })
         })
     }
   }
