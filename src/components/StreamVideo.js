@@ -20,8 +20,8 @@ const peer = new Peer("", {
     process.env.NODE_ENV === "development"
       ? "localhost"
       : "reactvideochatserver400.herokuapp.com",
-  port: 2000,
-  path: "/",
+  port: process.env.NODE_ENV === "development" && 4000,
+  path: "/peer",
   key: "peerjs",
 })
 
