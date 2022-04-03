@@ -16,10 +16,11 @@ import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 const socket = io(process.env.REACT_APP_SERVER)
 const peer = new Peer("", {
-  host: "localhost",
+  host: process.env.PEER_SERVER,
   port: 2000,
   path: "/",
-  key: "peerjs",
+  key: process.env.PEER_KEY,
+  secure: true,
 })
 
 const StreamVideo = ({ location }) => {
