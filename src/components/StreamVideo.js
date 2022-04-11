@@ -15,15 +15,23 @@ import { ArrowCircleRightIcon } from "@heroicons/react/solid"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 const socket = io(process.env.REACT_APP_SERVER)
-const peer = new Peer("", {
-  host:
-    process.env.NODE_ENV === "development"
-      ? "localhost"
-      : "reactvideochatserver400.herokuapp.com",
-  port: process.env.NODE_ENV === "development" && 4000,
-  path: "/peer",
-  key: "peerjs",
-})
+
+const peerConfig = {
+  // !important use code below for loacl dev if the peer server is down or not working ⬇️
+  // host:"localhost",
+  // port:2000,
+  // key:"peerjs",
+  // path:"/"
+  // !important use code below if the peer server is down or not working ⬇️
+  // secure: true,
+  // port: 443,
+  // iceServers: [
+  //   { urls: "stun:stun.l.google.com:19302" },
+  //   { urls: "stun:stun1.l.google.com:19302" },
+  //   { urls: "stun:stun2.l.google.com:19302" },
+  // ],
+}
+const peer = new Peer()
 
 const StreamVideo = ({ location }) => {
   const [userId, setUserId] = useState(null)
